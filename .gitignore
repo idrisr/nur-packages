@@ -2,3 +2,6 @@ result
 result-*
 
 session.yaml
+.envrc
+.devenv
+.direnv

@@ -7,15 +7,30 @@
 #     nix-build -A mypackage
 
 { pkgs ? import <nixpkgs> { } }:
-
-{
+(rec {
   # The `lib`, `modules`, and `overlays` names are special
   lib = import ./lib { inherit pkgs; }; # functions
   modules = import ./modules; # NixOS modules
-  overlays = import ./overlays; # nixpkgs overlays
+  overlays = import ./overlays; # NixOS modules
 
-  mksession = pkgs.callPackage ./pkgs/mksession { };
-  pvm = pkgs.callPackage ./pkgs/presentation-video-manager { };
-  vttclean = pkgs.callPackage ./pkgs/vttclean { };
-  topdf = pkgs.callPackage ./pkgs/topdf { };
-}
+  booknote = pkgs.callPackage ./pkgs/booknote { inherit pdftc; };
+  mksession = pkgs.haskell.packages.ghc965.callPackage ./pkgs/mksession { };
+  newcover = pkgs.haskell.packages.ghc96.callPackage ./pkgs/newcover { };
+  pdftc = pkgs.callPackage ./pkgs/pdftc { };
+  # pipe-rename = pkgs.callPackage ./pkgs/pipe-rename { };
+  pvm =
+    pkgs.haskell.packages.ghc965.callPackage ./pkgs/presentation-video-manager
+    { };
+  slide2text = pkgs.haskell.packages.ghc948.callPackage ./pkgs/slide2text { };
+  topdf = pkgs.haskell.packages.ghc965.callPackage ./pkgs/topdf { };
+  videoChapter =
+    pkgs.haskell.packages.ghc96.callPackage ./pkgs/videoChapter { };
+  vttclean = pkgs.haskell.packages.ghc96.callPackage ./pkgs/vttclean { };
+} // pkgs.lib.genAttrs [
+  "audioPreview"
+  "awscost"
+  "mdtopdf"
+  "seder"
+  "srtcpy"
+  "transcribe"
+] (x: pkgs.callPackage ./pkgs/${x} { }))

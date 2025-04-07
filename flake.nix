@@ -1,6 +1,6 @@
 {
   description = "My personal NUR repository";
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/24.05";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/24.11";
   outputs = { self, nixpkgs }:
     let
       systems = [
@@ -18,5 +18,7 @@
       packages = forAllSystems (system:
         nixpkgs.lib.filterAttrs (_: v: nixpkgs.lib.isDerivation v)
         self.legacyPackages.${system});
+      overlays = forAllSystems (system: import ./overlay.nix)
+        // (import ./overlays);
     };
 }
